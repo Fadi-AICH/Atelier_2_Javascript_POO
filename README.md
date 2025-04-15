@@ -124,11 +124,10 @@ Borrows.delete("Antigone");
 
 ---
 
-## ✍️ Auteur
-
-**👤 Fadi AICH**  
-🎓 Étudiant ingénieur en cybersécurité | 🧠 Passionné d’ethical hacking  
-🔗 [GitHub](https://github.com/Fadi-AICH)
+## ✍️ Auteurs
+- Member 1: AICH Fadi
+- Member 2: ELHAMDOUCHI Ilyasse
+- Member 3: EL BADRE Anas
 
 ---
 
