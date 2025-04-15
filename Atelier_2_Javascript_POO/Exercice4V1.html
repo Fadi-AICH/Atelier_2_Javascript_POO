@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Code Wall - Mini Blog</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background-color: #f9f9f9;
+    }
+    header {
+      background-color: white;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .logo {
+      font-size: 1.3rem;
+    }
+    .highlight {
+      color: #5a45f0;
+      font-weight: bold;
+    }
+    nav a {
+      margin-left: 1rem;
+      text-decoration: none;
+      color: #333;
+      font-weight: bold;
+    }
+    .container {
+      max-width: 750px;
+      margin: 2rem auto;
+      background: white;
+      border-radius: 10px;
+      padding: 2rem;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+    }
+    h2 {
+      color: #444;
+      border-left: 5px solid orange;
+      padding-left: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 0.8rem;
+      margin-bottom: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 1rem;
+    }
+    button {
+      background-color: #5a45f0;
+      color: white;
+      padding: 0.7rem 2rem;
+      border: none;
+      border-radius: 5px;
+      font-weight: bold;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background-color: #4534cc;
+    }
+    .post {
+      background-color: #f0f0ff;
+      border-left: 4px solid #5a45f0;
+      padding: 1rem;
+      margin-top: 1.5rem;
+      border-radius: 5px;
+    }
+    .post h3 {
+      margin-top: 0;
+      margin-bottom: 0.3rem;
+      font-size: 1.2rem;
+    }
+    .post p {
+      margin: 0.3rem 0 0.5rem;
+    }
+    .post small {
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo">{ CODE <span class="highlight">WALL</span> }</div>
+    <nav>
+      <a href="#">My Blogs</a>
+      <a href="#">Login</a>
+      <a href="#">Sign Up</a>
+    </nav>
+  </header>
+
+  <div class="container">
+    <h2>Your Post</h2>
+    <form id="postForm">
+      <input type="text" id="title" placeholder="Title" required />
+      <textarea id="description" rows="4" placeholder="Description" required></textarea>
+      <input type="text" id="author" placeholder="Your Name" required />
+      <button type="submit">POST</button>
+    </form>
+
+    <div id="postList"></div>
+  </div>
+
+  <script>
+    class User {
+      constructor(name) {
+        this.name = name;
+      }
+
+      toJSON() {
+        return { name: this.name };
+      }
+
+      static fromJSON(json) {
+        return new User(json.name);
+      }
+    }
+
+    class Post {
+      constructor(title, content, author) {
+        this.title = title;
+        this.content = content;
+        this.author = author instanceof User ? author : new User(author);
+      }
+
+      toHTML() {
+        return `
+          <div class="post">
+            <h3>${this.title}</h3>
+            <p>${this.content}</p>
+            <small><i>by ${this.author.name}</i></small>
+          </div>
+        `;
+      }
+
+      toJSON() {
+        return {
+          title: this.title,
+          content: this.content,
+          author: this.author.toJSON()
+        };
+      }
+
+      static fromJSON(json) {
+        return new Post(json.title, json.content, User.fromJSON(json.author));
+      }
+    }
+
+    const form = document.getElementById("postForm");
+    const postList = document.getElementById("postList");
+
+    let posts = JSON.parse(localStorage.getItem("posts") || "[]").map(p => Post.fromJSON(p));
+
+    function displayPosts() {
+      postList.innerHTML = posts.map(p => p.toHTML()).join("");
+    }
+
+    form.addEventListener("submit", function(e) {
+      e.preventDefault();
+
+      const title = document.getElementById("title").value;
+      const content = document.getElementById("description").value;
+      const authorName = document.getElementById("author").value;
+
+      const newPost = new Post(title, content, new User(authorName));
+      posts.unshift(newPost);
+
+      localStorage.setItem("posts", JSON.stringify(posts.map(p => p.toJSON())));
+      form.reset();
+      displayPosts();
+    });
+
+    displayPosts();
+  </script>
+
+</body>
+</html>
